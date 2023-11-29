@@ -11,13 +11,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def testing_function(first, second):
-    for i in range(len(first)):
-        if first[i][0] == second[i][0]:
-            return True
-        else:
-            pass
-    return False
+# in loving memory
+#def testing_function(first, second):
+    #for i in range(len(first)):
+        #if first[i][0] == second[i][0]:
+            #return True
+        #else:
+            #pass
+    #return False
 
 
 def find(name, path):
@@ -99,34 +100,31 @@ async def submitfinal(
                 )
     else:
         ctx.respond("Sorry! For 2023, all files must be submitted directly to ATB. Maybe next year!", ephemeral=True)
-# ideally i'd want some sort of system that checks if a santa event is ongoing so that upload and submitfinal can't be used outside of certain time periods, but that's probably for later
+        # ideally i'd want some sort of system that checks if a santa event is ongoing so that upload and submitfinal can't be used outside of certain time periods, but that's probably for later
 
-@santa.command(description="LET'S HECKING GOOOOOOOOOOOOOOOOOO")
+@santa.command(description="LET'S GOOOOOOOOOOOOOOOOOO")
 async def hohoho(ctx):
     if str(ctx.author.id) in os.getenv("ADMIN_IDS"):  # TODO: also put this in .env
         await ctx.respond("Ho ho ho! Be prepared to get your files...", ephemeral=True)
         stepartists = db.get()
-        stepartists_randomized = random.sample(stepartists, len(stepartists))
-        shuffled = testing_function(stepartists, stepartists_randomized)
-        while shuffled:
-            print("Need to reshuffle!")  # cursed. will literally not scale well at all.
-            random.shuffle(stepartists_randomized)
-            shuffled = testing_function(stepartists, stepartists_randomized)
+        stepartists = random.sample(stepartists, len(stepartists))
+        #in loving memory of "shuffled" o7
         message_to_send = ""
         for i in range(len(stepartists)):
-            santa = stepartists[i][0]    
-            lucky_boy_or_girl = stepartists_randomized[i][0]
-            message_to_send += f"Stepartist {stepartists[i][1]} will get {stepartists_randomized[i][1]}'s file!\n"
+            santa = stepartists[i][0]
+            lucky_person = stepartists[(i+1)%len(stepartists)][0]
+            message_to_send += f"Stepartist {stepartists[i][1]} will get {stepartists[i][1]}'s file!\n"
             new_file = shutil.copyfile(
-                f"uploads/{lucky_boy_or_girl}.zip",
+                f"uploads/{lucky_person}.zip",
                 f"uploads/{stepartists[i][1]}present.zip",
-            )  # shouldn't hardcode in/out extensions, but fixable.
+            ) # TODO: shouldn't hardcode in/out extensions, but fixable.
             user = await bot.fetch_user(santa)
+            thread = await bot.create_thread()
             try:
                 await user.send(
-                    f"Here is your file! If you have any questions/concerns, feel free to message <@{devs[0]}>, and make sure to submit your file when you're done to him as well!  Ho ho ho!",
-                    file=discord.File(new_file),
-                )#In memory of devs[2]. Good job Zane.
+                    f"Here is your file! If you have any questions/concerns, feel free to message <an admin>, and make sure to submit your file to them when you're done as well! Ho ho ho!",
+                    file = discord.File(new_file),
+                ) # In memory of devs[2]. Good job Zane.
                 os.remove(new_file)
             except Exception as error:
                print("Oh no! That's not good! Here's the error:", error)
@@ -166,7 +164,7 @@ async def manualadd(ctx, stepartist: discord.SlashCommandOptionType.string, disc
 
 @santa.command(description="How does this bot work?")
 async def help(ctx):
-    if str(ctx.author.id) in os.getenv("ADMIN_IDS"): 
+    if str(ctx.author.id) in os.getenv("ADMIN_IDS"):
         embed = discord.Embed(
             title="Read me!",
             description="Hi there! Starting Secret Stepfile Santa 2023, we are proud to introduce to you ***SantaBot***! **SantaBot** has been made in order to make the entire Secret Santa Process generally be a lot more streamlined than in the past, and hopefully can be used for many years in the future!",
